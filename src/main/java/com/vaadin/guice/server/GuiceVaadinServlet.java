@@ -16,6 +16,7 @@
 package com.vaadin.guice.server;
 
 import com.google.common.collect.Iterables;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
@@ -46,7 +47,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -59,7 +59,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Iterables.getOnlyElement;
-import static com.google.inject.Guice.createInjector;
 import static com.google.inject.util.Modules.override;
 import static java.lang.reflect.Modifier.isAbstract;
 import static java.util.Arrays.stream;
@@ -171,6 +170,10 @@ public class GuiceVaadinServlet extends VaadinServlet {
         this.injector = createInjector(new VaadinModule(this), combinedModules);
 
         super.init(servletConfig);
+    }
+
+    protected Injector createInjector(Module... pModules) {
+        return Guice.createInjector(pModules);
     }
 
     private <U> Set<Class<? extends U>> filterTypes(Set<Class<? extends U>> types) {
@@ -288,7 +291,7 @@ public class GuiceVaadinServlet extends VaadinServlet {
         throw new IllegalStateException("no suitable constructor found for %s" + moduleClass);
     }
 
-    Injector getInjector() {
+    protected Injector getInjector() {
         return checkNotNull(injector, "injector is not set up yet");
     }
 
